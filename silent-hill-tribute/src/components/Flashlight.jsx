@@ -9,10 +9,14 @@ export default function Flashlight() {
     const set = (x, y) => { el.style.setProperty('--fx', x + 'px'); el.style.setProperty('--fy', y + 'px'); };
     const mv = (e) => { const b = el.getBoundingClientRect(); set(e.clientX - b.left, e.clientY - b.top); };
     el.addEventListener('pointermove', mv); el.addEventListener('pointerdown', mv);
-    let raf;
+    let raf, last = 0;
     if (reduced()) el.classList.add('lit');
     else if (!fine()) { // touch fallback: slow automatic sweep (tap also repositions)
-      const sweep = (t) => { set(el.clientWidth * (.5 + .35 * Math.sin(t / 1500)), el.clientHeight * (.5 + .3 * Math.sin(t / 2300))); raf = requestAnimationFrame(sweep); };
+      const sweep = (t) => {
+        raf = requestAnimationFrame(sweep);
+        last = t;
+        set(el.clientWidth * (.5 + .35 * Math.sin(t / 1500)), el.clientHeight * (.5 + .3 * Math.sin(t / 2300)));
+      };
       raf = requestAnimationFrame(sweep);
     }
     return () => { cancelAnimationFrame(raf); el.removeEventListener('pointermove', mv); el.removeEventListener('pointerdown', mv); };
@@ -24,7 +28,7 @@ export default function Flashlight() {
           Room 312. The dust is thick, but the TV is plugged in, and the videotape is waiting to play the past you tried to bury.
         </p>
       </div>
-      <p className="absolute bottom-10 text-sm text-fog">It is too dark to read. Move the light.</p>
+      <p className="absolute top-10 text-center w-full text-3xl font-display tracking-wide text-fog">It is too dark to read. Move the light.</p>
     </section>
   );
 }

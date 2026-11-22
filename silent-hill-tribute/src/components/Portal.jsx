@@ -37,10 +37,16 @@ const highlights = [
 
 export default function Portal() {
   return (
-    <section id="portal" className="portal-shell relative isolate overflow-hidden px-6 pb-6 pt-4 text-center sm:pb-7 sm:pt-5" aria-label="Highlights and news portal">
-      <div className="portal-backdrop absolute inset-0 -z-10 opacity-90" aria-hidden="true" />
+    <section id="portal" className="portal-shell relative isolate overflow-hidden h-screen px-6 pb-6 pt-4 text-center sm:pb-7 sm:pt-5" aria-label="Highlights and news portal">
       <div className="relative mx-auto w-full max-w-[90rem]">
-        <h2 className="font-display text-[clamp(2rem,4vw,3.5rem)] tracking-[0.08em] text-bone/90">Highlights</h2>
+        <motion.h2
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="font-display text-[clamp(2rem,4vw,3.5rem)] tracking-[0.08em] text-bone/90"
+        >
+          Highlights
+        </motion.h2>
 
         <div className="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {highlights.map((item, index) => (
@@ -52,9 +58,10 @@ export default function Portal() {
               transition={{ duration: 0.55, delay: index * 0.08 }}
               className="portal-card group relative overflow-hidden border border-fog/50 bg-[#1b201f] text-left shadow-[0_28px_65px_rgba(0,0,0,0.45)]"
               style={{ minHeight: 'clamp(12rem, 26svh, 17rem)' }}
+              whileHover={{ y: -4 }}
             >
               <a href={item.href} target="_blank" rel="noreferrer" className="absolute inset-0 block" aria-label={`Open ${item.subtitle} video`}>
-                <img src={item.preview} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
+                <img src={item.preview} alt="" className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" loading="eager" />
 
                 <div className="relative flex h-full flex-col justify-between p-4 sm:p-5">
                   <div className="flex items-center justify-between text-[0.58rem] font-medium uppercase tracking-[0.22em] text-fog/90">
@@ -63,9 +70,14 @@ export default function Portal() {
                   </div>
 
                   <div className="relative mt-auto flex flex-col items-center justify-end text-center">
-                    <span className="portal-play mb-4" aria-hidden="true">
+                    <motion.span
+                      whileHover={{ scale: 1.1 }}
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                      className="portal-play mb-4" aria-hidden="true"
+                    >
                       <span>▶</span>
-                    </span>
+                    </motion.span>
 
                     <div className="font-display text-[clamp(1.8rem,2.8vw,3rem)] leading-none tracking-[0.08em] text-white/95 drop-shadow-[0_2px_10px_rgba(0,0,0,0.7)]">
                       {item.title}

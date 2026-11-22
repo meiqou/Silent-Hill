@@ -1,4 +1,4 @@
-import gsap from 'gsap';
+﻿import gsap from 'gsap';
 import { reduced } from '../lib';
 
 export default function Finale() {
@@ -10,7 +10,10 @@ export default function Finale() {
           className="mt-10 border border-amber px-6 py-3 tracking-widest text-amber hover:bg-amber hover:text-ink" aria-label="Return to the fog, scroll to top">
           RETURN TO THE FOG
         </button>
-        <p className="mt-8 text-sm"><a href="#/register" className="underline hover:text-amber">Register</a> · <a href="#/login" className="underline hover:text-amber">Sign in</a></p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm">
+          <a href="register.html" className="border border-amber px-5 py-2 tracking-widest text-amber hover:bg-amber hover:text-ink">Create account</a>
+          <a href="login.html" className="border border-fog/50 px-5 py-2 tracking-widest hover:text-amber">Sign in</a>
+        </div>
         <p className="mx-auto mt-16 max-w-md text-xs text-fog">A non-commercial fan-made website. Not affiliated with, or endorsed by, Konami. All visuals here are original.</p>
       </div>
     </footer>

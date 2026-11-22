@@ -13,14 +13,24 @@ const renamedEchoes = {
   'The Crest': 'The Radio',
   'The Siren': 'The Videotape',
 };
+const renamedChapters = {
+  'The Alley': 'The Cemetery',
+  'The Flashlight': 'Wood Side Apartments',
+  'The Letter': 'Brookhaven Hospital',
+  'The Pyramid': 'Toluca Prison',
+  'The Videotape': 'Lakeview Hotel',
+};
 export const prog = {
   depth: 0,
   tuned: false,
+  chapters: [],
   ...savedProgress,
   echoes: [...new Set((savedProgress.echoes || []).map((name) => renamedEchoes[name] || name))],
+  chapters: [...new Set((savedProgress.chapters || savedProgress.echoes || []).map((name) => renamedChapters[name] || name))],
 };
 export const save = (p) => { Object.assign(prog, p); try { localStorage.setItem('sh_progress', JSON.stringify(prog)); } catch {} };
 export const seen = (n) => { if (!prog.echoes.includes(n)) save({ echoes: [...prog.echoes, n] }); };
+export const chapterVisited = (n) => { if (!prog.chapters.includes(n)) save({ chapters: [...prog.chapters, n] }); };
 export const users = () => read('sh_users', {});
 export const session = () => localStorage.getItem('sh_session');
 export const sha = async (s) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map((b) => b.toString(16).padStart(2, '0')).join('');

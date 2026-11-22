@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { prog, save } from '../lib';
 
-const NAMES = ['The Alley', 'The Flashlight', 'The Letter', 'The Pyramid', 'The Radio', 'The Videotape'];
+const CHAPTERS = ['The Cemetery', 'Wood Side Apartments', 'Brookhaven Hospital', 'Toluca Prison', 'Lakeview Hotel'];
 
 // "Your Descent": progress saved while exploring the landing page, plus a private journal.
 export default function Dashboard({ user, setUser }) {
@@ -10,8 +10,8 @@ export default function Dashboard({ user, setUser }) {
   const [note, setNote] = useState(() => localStorage.getItem(nk) || '');
   const [sure, setSure] = useState(false), [, tick] = useState(0);
   const edit = (v) => { setNote(v); localStorage.setItem(nk, v); };
-  const reset = () => { save({ depth: 0, tuned: false, echoes: [] }); setSure(false); tick((n) => n + 1); };
-  const out = () => { localStorage.removeItem('sh_session'); setUser(null); location.hash = '#/'; };
+  const reset = () => { save({ depth: 0, tuned: false, chapters: [] }); setSure(false); tick((n) => n + 1); };
+  const out = () => { localStorage.removeItem('sh_session'); setUser(null); location.assign('index.html'); };
   const card = 'border border-fog/30 bg-ink/80 p-5';
   return (
     <main className="mx-auto min-h-screen max-w-4xl px-6 pb-20 pt-28">
@@ -26,15 +26,15 @@ export default function Dashboard({ user, setUser }) {
               <div className="h-full bg-rust" style={{ width: prog.depth + '%' }} />
             </div>
           </section>
-          <section className={card} aria-label="Signal">
-            <h2 className="text-sm text-fog">Radio signal</h2>
-            <p className="font-display text-5xl text-amber">{prog.tuned ? 'FOUND' : 'LOST'}</p>
-            <p className="mt-2 text-sm text-fog">{prog.tuned ? 'You heard the message.' : 'Only static so far.'}</p>
+          <section className={card} aria-label="Chapters visited">
+            <h2 className="text-sm text-fog">Chapters visited</h2>
+            <p className="font-display text-5xl text-amber">{prog.chapters?.length || 0} / {CHAPTERS.length}</p>
+            <p className="mt-2 text-sm text-fog">{(prog.chapters?.length || 0) === 0 ? 'No chapters entered yet.' : 'Explore the town further.'}</p>
           </section>
-          <section className={card + ' md:col-span-2'} aria-label="Echoes met">
-            <h2 className="text-sm text-fog">Echoes met ({prog.echoes.length} / 6)</h2>
+          <section className={card + ' md:col-span-2'} aria-label="Chapters">
+            <h2 className="text-sm text-fog">Chapters met ({prog.chapters?.length || 0} / {CHAPTERS.length})</h2>
             <ul className="mt-3 grid list-none grid-cols-2 gap-2 p-0 text-sm sm:grid-cols-3">
-              {NAMES.map((n) => <li key={n} className={prog.echoes.includes(n) ? 'text-bone' : 'text-fog/50'}>{prog.echoes.includes(n) ? '◆' : '◇'} {n}</li>)}
+              {CHAPTERS.map((n) => <li key={n} className={(prog.chapters || []).includes(n) ? 'text-bone' : 'text-fog/50'}>{(prog.chapters || []).includes(n) ? '◆' : '◇'} {n}</li>)}
             </ul>
           </section>
           <section className={card + ' md:col-span-2'} aria-label="Journal">
@@ -44,7 +44,7 @@ export default function Dashboard({ user, setUser }) {
           </section>
         </div>
         <div className="mt-8 flex flex-wrap gap-3 text-sm">
-          <a href="#/" className="border border-fog/50 px-4 py-2 hover:text-amber">Back to the fog</a>
+          <a href="index.html" className="border border-fog/50 px-4 py-2 hover:text-amber">Back to the fog</a>
           {sure ? (<>
             <button onClick={reset} data-danger className="border border-amber px-4 py-2 text-amber hover:bg-amber hover:text-ink">Confirm reset</button>
             <button onClick={() => setSure(false)} className="border border-fog/50 px-4 py-2 hover:text-amber">Cancel</button>

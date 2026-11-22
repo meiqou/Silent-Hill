@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { mouse, fine, reduced } from '../lib';
 
-// Flickering light + canvas ash trail (capped at 150 particles). Touch devices get a tap ripple instead.
+// Lightweight cursor + capped particle trail (throttled) for performance.
 export default function Cursor() {
   const cv = useRef(), lt = useRef();
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function Cursor() {
       return () => removeEventListener('pointerdown', tap);
     }
     const c = cv.current, x = c.getContext('2d'), P = [], still = reduced();
-    let raf, lx = 0, ly = 0;
+    let raf, lx = 0, ly = 0, last = 0;
     const size = () => { c.width = innerWidth; c.height = innerHeight; };
     size();
     const move = (e) => {
@@ -24,25 +24,25 @@ export default function Cursor() {
       const t = e.target.closest?.('a,button,input,[data-danger]');
       lt.current.dataset.mode = t ? (t.dataset.danger !== undefined ? 'danger' : 'link') : '';
     };
-    const tick = () => {
-      lx += (mouse.x - lx) * .2; ly += (mouse.y - ly) * .2;
+    const tick = (ts) => {
+      raf = requestAnimationFrame(tick);
+      last = ts;
+      lx = mouse.x; ly = mouse.y;
       lt.current.style.transform = `translate3d(${lx}px,${ly}px,0)`;
       x.clearRect(0, 0, c.width, c.height);
       if (!still) {
-        const n = Math.min(3, (Math.hypot(mouse.vx, mouse.vy) / 10) | 0); // amount tied to speed
-        for (let i = 0; i < n && P.length < 150; i++)
-          P.push({ x: mouse.x, y: mouse.y, vx: Math.random() - .5, vy: -Math.random() - .3, l: 1, r: 1 + Math.random() * 3, e: Math.random() < .3 });
-        mouse.vx *= .8; mouse.vy *= .8;
+        const speed = Math.hypot(mouse.vx, mouse.vy);
+        if (speed > 2 && P.length < 40) P.push({ x: mouse.x, y: mouse.y, vx: (Math.random() - .5) * .6, vy: -Math.random() - .2, l: 1, r: 1 + Math.random() * 2.5, e: Math.random() < .25 });
+        mouse.vx *= .7; mouse.vy *= .7;
         for (let i = P.length; i--;) {
-          const p = P[i]; p.x += p.vx + Math.sin(p.y * .02) * .3; p.y += p.vy; p.l -= .012;
+          const p = P[i]; p.x += p.vx; p.y += p.vy; p.l -= .03;
           if (p.l <= 0) { P.splice(i, 1); continue; }
-          x.fillStyle = p.e ? `rgba(201,138,43,${p.l * .6})` : `rgba(154,161,156,${p.l * .35})`;
-          x.beginPath(); x.arc(p.x, p.y, p.r * (2 - p.l), 0, 6.3); x.fill();
+          x.fillStyle = p.e ? `rgba(201,138,43,${p.l * .5})` : `rgba(154,161,156,${p.l * .28})`;
+          x.beginPath(); x.arc(p.x, p.y, p.r, 0, 6.3); x.fill();
         }
       }
-      raf = requestAnimationFrame(tick);
     };
-    tick();
+    raf = requestAnimationFrame(tick);
     addEventListener('pointermove', move); addEventListener('resize', size);
     return () => { cancelAnimationFrame(raf); removeEventListener('pointermove', move); removeEventListener('resize', size); };
   }, []);
